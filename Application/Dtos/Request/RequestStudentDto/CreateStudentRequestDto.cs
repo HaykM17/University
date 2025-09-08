@@ -1,4 +1,4 @@
-﻿using Application.Common;
+﻿using Application.Common.Validation;
 using Domain.Entities.Enums;
 using FluentValidation;
 
@@ -32,7 +32,7 @@ public class CreateStudentRequestDtoValidator : AbstractValidator<CreateStudentR
            .NotNull().WithMessage("Email is required")
            .NotEmpty().WithMessage("Email can't be empty")
            .MaximumLength(255).WithMessage("Email length must be <= 255")
-           .Matches(RegexPattern.Email).WithMessage("Email format is invalid");
+           .Matches(ValidationPattern.Email).WithMessage("Email format is invalid");
 
         RuleFor(x => x.EnrollmentDate)
            .LessThanOrEqualTo(DateTime.Today).WithMessage("EnrollmentDate can't be in the future");

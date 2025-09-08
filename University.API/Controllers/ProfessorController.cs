@@ -16,47 +16,87 @@ public class ProfessorController : ControllerBase
         _service = service;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetProfessorsResponseDto>>> GetAll(CancellationToken ct)
+    [HttpPost]
+    public async Task<IActionResult> CreateAsync([FromBody] CreateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
-        var result = await _service.GetAllAsync(ct);
+        if (professorDto == null)
+        {
+            return BadRequest();
+        }
+
+
+        var created = await _service.CreateAsync(professorDto, cancellationToken);
+
+        return Ok(created);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var result = await _service.GetAllAsync(cancellationToken);
+
         return Ok(result);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<GetProfessorByIdResponseDto>> GetById(int id, CancellationToken ct)
+    public async Task<IActionResult> GetByIdAsync([FromRoute]int id, CancellationToken cancellationToken)
     {
-        var dto = await _service.GetByIdAsync(id, ct);
-        if (dto == null) return NotFound();
+        var dto = await _service.GetByIdAsync(id, cancellationToken);
+
+        if (dto == null)
+        {
+            return NotFound();
+        }
+            
         return Ok(dto);
     }
-
-    [HttpPost]
-    public async Task<ActionResult<CreateProfessorRequestDto>> Create([FromBody] CreateProfessorRequestDto dto, CancellationToken ct)
-    {
-        if (dto == null) return BadRequest();
-
-
-        var created = await _service.CreateAsync(dto, ct);
-        return Ok(created);
-    }
+    
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<UpdateProfessorRequestDto>> Update(int id, [FromBody] UpdateProfessorRequestDto dto, CancellationToken ct)
+    public async Task<IActionResult> UpdateFullAsync([FromRoute] int id, [FromBody] UpdateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
-        if (dto == null) return BadRequest();
+        if (professorDto == null)
+        {
+            return BadRequest();
+        }
 
-        var updated = await _service.UpdateAsync(id, dto, ct);
-        if (updated == null) return NotFound();
+        var updated = await _service.UpdateFullAsync(id, professorDto, cancellationToken);
+
+        if (updated == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(updated);
+    }
+
+    [HttpPatch("/patch/{id:int}")]
+    public async Task<IActionResult> UpdatePartialAsync([FromRoute]int id, [FromBody]UpdateProfessorFirstNameAndLastNameRequestDto professorDto, CancellationToken cancellationToken)
+    {
+        if (professorDto == null)
+        {
+            return BadRequest();
+        }
+
+        var updated = await _service.UpdatePartialAsync(id, professorDto, cancellationToken);
+
+        if (updated == null)
+        {
+            return NotFound();
+        }
 
         return Ok(updated);
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<ProfessorResponseDto>> Delete(int id, CancellationToken ct)
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var deleted = await _service.DeleteAsync(id, ct);
-        if (deleted == null) return NotFound();
+        var deleted = await _service.DeleteAsync(id, cancellationToken);
+
+        if (deleted == null)
+        {
+            return NotFound();
+        }
 
         return Ok(deleted);
     }

@@ -1,4 +1,4 @@
-﻿using Application.Common;
+﻿using Application.Common.Validation;
 using Domain.Entities.Enums;
 using FluentValidation;
 using System.Text.Json.Serialization;
@@ -35,7 +35,7 @@ public class UpdateProfessorRequestDtoValidator : AbstractValidator<UpdateProfes
            .NotNull().WithMessage("Email is required")
            .NotEmpty().WithMessage("Email can't be empty")
            .MaximumLength(255).WithMessage("Email length must be <= 255")
-           .Matches(RegexPattern.Email).WithMessage("Email format is invalid");
+           .Matches(ValidationPattern.Email).WithMessage("Email format is invalid");
 
         RuleFor(dto => dto.HireDate)
           .LessThanOrEqualTo(DateTime.Today).WithMessage("HireDate can't be in the future");

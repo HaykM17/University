@@ -4,6 +4,7 @@ using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ResponseProfessorDto;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
 
@@ -29,9 +30,9 @@ public class ProfessorService : IProfessorService
 
     public async Task<IEnumerable<GetProfessorsResponseDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var professors = await _professorRepository.GetAllAsync(cancellationToken);
+        var professors = _professorRepository.GetAll(cancellationToken);
 
-        var professorsDto = professors.Select(p => new GetProfessorsResponseDto
+        var professorsDto = await professors.Select(p => new GetProfessorsResponseDto
         {
             Id = p.Id,
             FirstName = p.FirstName,
@@ -40,7 +41,7 @@ public class ProfessorService : IProfessorService
             Status = p.Status,
             HireDate = p.HireDate,
             CreatedAt = p.CreatedAt
-        });
+        }).ToListAsync();
         
         return professorsDto;
     }
@@ -59,11 +60,29 @@ public class ProfessorService : IProfessorService
         return professorDto;
     }
 
-    public async Task<UpdateProfessorRequestDto?> UpdateAsync(int id, UpdateProfessorRequestDto professorDto, CancellationToken cancellationToken)
+    public async Task<UpdateProfessorRequestDto?> UpdateFullAsync(int id, UpdateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
         var professor = _maapper.Map<Professor>(professorDto);
 
-        var prof = await _professorRepository.UpdateAsync(id, professor, cancellationToken);
+        var prof = await _professorRepository.UpdateFullAsync(id, professor, cancellationToken);
+
+        if(prof == null)
+        {
+            return null;
+        }
+
+        return professorDto;
+    }
+
+    public async Task<UpdateProfessorFirstNameAndLastNameRequestDto?> UpdatePartialAsync(int id, UpdateProfessorFirstNameAndLastNameRequestDto professorDto, CancellationToken cancellationToken)
+    {
+        var professor = new Professor
+        {
+            FirstName = professorDto.FirstName,
+            LastName = professorDto.LastName,
+        };
+        
+        var prof = await _professorRepository.UpdatePartialAsync(id, professor, cancellationToken);
 
         if(prof == null)
         {
