@@ -17,7 +17,7 @@ public class AutoMapperProfiles : Profile
             
 
         CreateMap<Professor, GetProfessorByIdResponseDto>().ReverseMap();
-        CreateMap<Professor, GetProfessorsResponseDto>().ReverseMap();
+        CreateMap<Professor, ProfessorsResponseDto>().ReverseMap();
         CreateMap<Professor, ProfessorResponseDto>().ReverseMap();
 
         CreateMap<Student, CreateStudentRequestDto>().ReverseMap();
