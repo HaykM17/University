@@ -1,5 +1,7 @@
 ﻿using Application.Abstract.Repasitories;
 using Application.Abstract.Services;
+using Application.Common.Extensions;
+using Application.Common.Pagination;
 using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ResponseProfessorDto;
 using AutoMapper;
@@ -28,11 +30,11 @@ public class ProfessorService : IProfessorService
         return professorDto;
     }
 
-    public async Task<IEnumerable<GetProfessorsResponseDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ProfessorsResponseDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var professors = _professorRepository.GetAll(cancellationToken);
 
-        var professorsDto = await professors.Select(p => new GetProfessorsResponseDto
+        var professorsDto = await professors.Select(p => new ProfessorsResponseDto
         {
             Id = p.Id,
             FirstName = p.FirstName,
@@ -104,5 +106,74 @@ public class ProfessorService : IProfessorService
         var professorDto = _maapper.Map<ProfessorResponseDto>(professor);
 
         return professorDto;
-    } 
+    }
+
+    public async Task<ProfessorsPageResponseDto> GetPagedAsync(
+        FilterOptions<GetProfessorsFilterRequestDto> request,
+        CancellationToken ct = default)
+    {
+        // 1) База: IQueryable из репозитория
+        var q = _professorRepository.GetAll(ct)
+            .Where(p => !p.IsDeleted);
+
+        // 2) Предметные фильтры
+        if (request.Filters is { } f)
+        {
+            if (!string.IsNullOrWhiteSpace(f.Name))
+            {
+                // ВНИМАНИЕ: StringComparison EF не переведёт в SQL.
+                // Если нужна case-insensitive проверка гарантированно — используй collation БД или ToLower().
+                var name = f.Name;
+                q = q.Where(p => p.FirstName == name || p.LastName == name);
+            }
+
+            if (!string.IsNullOrWhiteSpace(f.Email))
+            {
+                var email = f.Email;
+                q = q.Where(p => p.Email == email);
+            }
+
+            if (f.Status.HasValue)
+            {
+                q = q.Where(p => p.Status == f.Status.Value);
+            }
+
+            if (f.MinStudents.HasValue)
+            {
+                q = q.Where(p => p.ProfessorStudents.Count >= f.MinStudents.Value);
+            }
+        }
+
+        // 3) Total ДО пагинации
+        var total = await q.CountAsync(ct);
+        if (total == 0)
+        {
+            return new ProfessorsPageResponseDto
+            {
+                Meta = PaginationInfo.Create(0, request.Page, request.PerPage),
+                Items = new()
+            };
+        }
+
+        // 4) Сортировка + пагинация (кастом для Professors)
+        var pageQ = ProfessorQueryableExtensions.Paginate(q, request);
+
+        // 5) Текущая страница → DTO
+        var items = await pageQ.Select(p => new GetProfessorDto
+        {
+            Id = p.Id,
+            FirstName = p.FirstName,
+            LastName = p.LastName,
+            Email = p.Email,
+            Status = p.Status,
+            HireDate = p.HireDate,
+            CreatedAt = p.CreatedAt,
+            StudentsCount = p.ProfessorStudents.Count
+        }).ToListAsync(ct);
+
+        // 6) Мета
+        var meta = PaginationInfo.Create(total, request.Page, request.PerPage);
+
+        return new ProfessorsPageResponseDto { Meta = meta, Items = items };
+    }
 }
