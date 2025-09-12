@@ -1,6 +1,6 @@
 ﻿using Application.Abstract.Services;
 using Application.Dtos.Request.ProfessorDto;
-using Application.Dtos.Response.ResponseProfessorDto;
+using Application.Dtos.Response.ProfessorDto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace University.API.Controllers;

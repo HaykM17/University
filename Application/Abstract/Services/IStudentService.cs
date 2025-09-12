@@ -1,7 +1,5 @@
 ﻿using Application.Dtos.Request.StudentDto;
-using Application.Dtos.Response.ResponseStudentDto;
 using Application.Dtos.Response.StudentDto;
-using Domain.Entities;
 
 namespace Application.Abstract.Services;
 

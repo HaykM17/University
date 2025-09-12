@@ -3,7 +3,7 @@ using Application.Abstract.Services;
 using Application.Common.Extensions;
 using Application.Common.Pagination;
 using Application.Dtos.Request.ProfessorDto;
-using Application.Dtos.Response.ResponseProfessorDto;
+using Application.Dtos.Response.ProfessorDto;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
