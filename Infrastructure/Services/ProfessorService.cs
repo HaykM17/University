@@ -10,17 +10,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
 
-public class ProfessorService : IProfessorService
+public class ProfessorService(IGenericRepository<Professor> _professorRepository, IMapper _maapper) : IProfessorService
 {
-    private readonly IGenericRepository<Professor> _professorRepository;
-    private readonly IMapper _maapper;
-
-    public ProfessorService(IGenericRepository<Professor> professorRepository, IMapper maapper)
-    {
-        _professorRepository = professorRepository;
-        _maapper = maapper;
-    }
-
     public async Task<CreateProfessorRequestDto> CreateAsync(CreateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
         var professor = _maapper.Map<Professor>(professorDto);
@@ -108,21 +99,15 @@ public class ProfessorService : IProfessorService
         return professorDto;
     }
 
-    public async Task<ProfessorsPageResponseDto> GetPagedAsync(
-        FilterOptions<GetProfessorsFilterRequestDto> request,
-        CancellationToken ct = default)
+    public async Task<ProfessorsPageResponseDto> GetPagedAsync(FilterOptions<GetProfessorsFilterRequestDto> request, CancellationToken cancellationToken = default)
     {
-        // 1) База: IQueryable из репозитория
-        var q = _professorRepository.GetAll(ct)
+        var q = _professorRepository.GetAll(cancellationToken)
             .Where(p => !p.IsDeleted);
 
-        // 2) Предметные фильтры
         if (request.Filters is { } f)
         {
             if (!string.IsNullOrWhiteSpace(f.Name))
             {
-                // ВНИМАНИЕ: StringComparison EF не переведёт в SQL.
-                // Если нужна case-insensitive проверка гарантированно — используй collation БД или ToLower().
                 var name = f.Name;
                 q = q.Where(p => p.FirstName == name || p.LastName == name);
             }
@@ -144,8 +129,7 @@ public class ProfessorService : IProfessorService
             }
         }
 
-        // 3) Total ДО пагинации
-        var total = await q.CountAsync(ct);
+        var total = await q.CountAsync(cancellationToken);
         if (total == 0)
         {
             return new ProfessorsPageResponseDto
@@ -155,10 +139,8 @@ public class ProfessorService : IProfessorService
             };
         }
 
-        // 4) Сортировка + пагинация (кастом для Professors)
         var pageQ = ProfessorQueryableExtensions.Paginate(q, request);
 
-        // 5) Текущая страница → DTO
         var items = await pageQ.Select(p => new GetProfessorDto
         {
             Id = p.Id,
@@ -169,9 +151,8 @@ public class ProfessorService : IProfessorService
             HireDate = p.HireDate,
             CreatedAt = p.CreatedAt,
             StudentsCount = p.ProfessorStudents.Count
-        }).ToListAsync(ct);
+        }).ToListAsync(cancellationToken);
 
-        // 6) Мета
         var meta = PaginationInfo.Create(total, request.Page, request.PerPage);
 
         return new ProfessorsPageResponseDto { Meta = meta, Items = items };
