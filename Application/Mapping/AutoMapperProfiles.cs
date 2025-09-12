@@ -1,7 +1,6 @@
 ﻿using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Request.StudentDto;
-using Application.Dtos.Response.ResponseProfessorDto;
-using Application.Dtos.Response.ResponseStudentDto;
+using Application.Dtos.Response.ProfessorDto;
 using Application.Dtos.Response.StudentDto;
 using AutoMapper;
 using Domain.Entities;

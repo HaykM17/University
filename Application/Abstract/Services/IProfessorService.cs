@@ -1,6 +1,6 @@
 ﻿using Application.Common.Pagination;
 using Application.Dtos.Request.ProfessorDto;
-using Application.Dtos.Response.ResponseProfessorDto;
+using Application.Dtos.Response.ProfessorDto;
 
 namespace Application.Abstract.Services;
 

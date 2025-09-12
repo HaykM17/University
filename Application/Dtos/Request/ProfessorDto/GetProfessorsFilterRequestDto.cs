@@ -1,6 +1,5 @@
 ﻿using Application.Common.Pagination;
 using Domain.Entities.Enums;
-using System.Text.Json.Serialization;
 
 public record GetProfessorsFilterRequestDto(
     string? Name = null,

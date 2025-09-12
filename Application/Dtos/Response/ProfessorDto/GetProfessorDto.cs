@@ -2,7 +2,7 @@
 using Domain.Entities.Enums;
 using System.Text.Json.Serialization;
 
-namespace Application.Dtos.Response.ResponseProfessorDto;
+namespace Application.Dtos.Response.ProfessorDto;
 
 public class GetProfessorDto
 {
