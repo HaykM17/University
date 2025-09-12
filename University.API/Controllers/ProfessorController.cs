@@ -38,6 +38,15 @@ public class ProfessorController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet]
+    [Route("filtered")]
+    [ProducesResponseType(typeof(ProfessorsPageResponseDto), 200)]
+    public async Task<ActionResult<ProfessorsPageResponseDto>> GetPagedAsync([FromQuery] GetProfessorsRequestDto request, CancellationToken cancellationToken)
+    {
+        var result = await _service.GetPagedAsync(request, cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetByIdAsync([FromRoute]int id, CancellationToken cancellationToken)
     {
