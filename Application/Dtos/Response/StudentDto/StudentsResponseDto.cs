@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Application.Dtos.Response.StudentDto;
 
-public class GetStudentByIdResponseDto
+public class StudentsResponseDto
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
@@ -13,4 +13,5 @@ public class GetStudentByIdResponseDto
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public EnrollmentStatus Status { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

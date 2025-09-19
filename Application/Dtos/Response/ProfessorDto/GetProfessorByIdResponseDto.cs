@@ -14,5 +14,4 @@ public class GetProfessorByIdResponseDto
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ProfessorRank Status { get; set; }
-    List<GetStudentByIdResponseDto> Students { get; set; } = [];
 }

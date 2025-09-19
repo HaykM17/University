@@ -13,8 +13,6 @@ public class AutoMapperProfiles : Profile
     {
         CreateMap<Professor, CreateProfessorRequestDto>().ReverseMap();
         CreateMap<UpdateProfessorRequestDto, Professor>().ForMember(p => p.Id, x => x.Ignore()).ReverseMap();
-            
-
         CreateMap<Professor, GetProfessorByIdResponseDto>().ReverseMap();
         CreateMap<Professor, ProfessorsResponseDto>().ReverseMap();
         CreateMap<Professor, ProfessorResponseDto>().ReverseMap();
@@ -22,7 +20,8 @@ public class AutoMapperProfiles : Profile
         CreateMap<Student, CreateStudentRequestDto>().ReverseMap();
         CreateMap<Student, UpdateStudentRequestDto>().ReverseMap();
         CreateMap<Student, GetStudentByIdResponseDto>().ReverseMap();
-        CreateMap<Student, GetStudentsResponseDto>().ReverseMap();
+        CreateMap<Student, StudentsResponseDto>().ReverseMap();
         CreateMap<Student, StudentResponseDto>().ReverseMap();
+        CreateMap<Student, BulkUpdateStudentRequestDto>().ReverseMap();
     }
 }
