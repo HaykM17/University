@@ -18,7 +18,7 @@ public class UpdateProfessorFirstNameAndLastNameRequestDtoValidator : AbstractVa
           .MaximumLength(50).WithMessage("FirstName length must be <= 50");
 
         RuleFor(dto => dto.LastName)
-            .NotNull().WithMessage("v is required")
+            .NotNull().WithMessage("LastName is required")
             .NotEmpty().WithMessage("LastName can't be empty")
             .MaximumLength(100).WithMessage("LastName length must be <= 100");
     }

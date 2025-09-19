@@ -3,9 +3,9 @@ using Domain.Entities;
 
 namespace Application.Common.Extensions;
 
-public static class ProfessorQueryableExtensions
+public static class StudentQueryableExtensions
 {
-    public static IQueryable<Professor> Paginate(this IQueryable<Professor> query, FilterOptions? filter)
+    public static IQueryable<Student> Paginate(this IQueryable<Student> query, FilterOptions? filter)
     {
         if (filter is null) return query;
 
@@ -17,8 +17,8 @@ public static class ProfessorQueryableExtensions
             return QueryableExtensionsPagination.Paginate(
                 query, filter,
                 q => string.Equals(order, SortOrders.Ascending, StringComparison.OrdinalIgnoreCase)
-                    ? q.OrderBy(p => p.LastName).ThenBy(p => p.FirstName)
-                    : q.OrderByDescending(p => p.LastName).ThenByDescending(p => p.FirstName)
+                    ? q.OrderBy(s => s.LastName).ThenBy(s => s.FirstName)
+                    : q.OrderByDescending(s => s.LastName).ThenByDescending(s => s.FirstName)
             );
         }
 
@@ -26,7 +26,7 @@ public static class ProfessorQueryableExtensions
         {
             return QueryableExtensionsPagination.Paginate(
                 query, filter,
-                q => q.OrderBy(order, p => p.Email)
+                q => q.OrderBy(order, s => s.Email)
             );
         }
 
@@ -34,15 +34,15 @@ public static class ProfessorQueryableExtensions
         {
             return QueryableExtensionsPagination.Paginate(
                 query, filter,
-                q => q.OrderBy(order, p => p.Status)
+                q => q.OrderBy(order, s => s.Status)
             );
         }
 
-        if (string.Equals(sortBy, "students", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(sortBy, "professors", StringComparison.OrdinalIgnoreCase))
         {
             return QueryableExtensionsPagination.Paginate(
                 query, filter,
-                q => q.OrderBy(order, p => p.ProfessorStudents.Count)
+                q => q.OrderBy(order, s => s.ProfessorStudents.Count)
             );
         }
 

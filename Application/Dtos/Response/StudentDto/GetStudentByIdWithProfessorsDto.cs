@@ -1,9 +1,10 @@
-﻿using Domain.Entities.Enums;
+﻿using Application.Dtos.Response.ProfessorDto;
+using Domain.Entities.Enums;
 using System.Text.Json.Serialization;
 
 namespace Application.Dtos.Response.StudentDto;
 
-public class GetStudentByIdResponseDto
+public class GetStudentByIdWithProfessorsDto
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
@@ -13,4 +14,5 @@ public class GetStudentByIdResponseDto
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public EnrollmentStatus Status { get; set; }
+    public List<ProfessorsResponseDto> Professors { get; set; } = [];
 }

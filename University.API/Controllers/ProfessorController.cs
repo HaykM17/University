@@ -17,14 +17,8 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateProfessorRequestDto professorDto, CancellationToken cancellationToken)
+    public async ValueTask<IActionResult> CreateAsync([FromBody] CreateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
-        if (professorDto == null)
-        {
-            return BadRequest();
-        }
-
-
         var created = await _service.CreateAsync(professorDto, cancellationToken);
 
         return Ok(created);
@@ -50,31 +44,21 @@ public class ProfessorController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetByIdAsync([FromRoute]int id, CancellationToken cancellationToken)
     {
-        var dto = await _service.GetByIdAsync(id, cancellationToken);
+        var professor = await _service.GetByIdAsync(id, cancellationToken);
 
-        if (dto == null)
+        if (professor == null)
         {
             return NotFound();
         }
             
-        return Ok(dto);
+        return Ok(professor);
     }
     
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateFullAsync([FromRoute] int id, [FromBody] UpdateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
-        if (professorDto == null)
-        {
-            return BadRequest();
-        }
-
         var updated = await _service.UpdateFullAsync(id, professorDto, cancellationToken);
-
-        if (updated == null)
-        {
-            return NotFound();
-        }
 
         return Ok(updated);
     }
@@ -82,11 +66,6 @@ public class ProfessorController : ControllerBase
     [HttpPatch("/patch/{id:int}")]
     public async Task<IActionResult> UpdatePartialAsync([FromRoute]int id, [FromBody]UpdateProfessorFirstNameAndLastNameRequestDto professorDto, CancellationToken cancellationToken)
     {
-        if (professorDto == null)
-        {
-            return BadRequest();
-        }
-
         var updated = await _service.UpdatePartialAsync(id, professorDto, cancellationToken);
 
         if (updated == null)
@@ -98,7 +77,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var deleted = await _service.DeleteAsync(id, cancellationToken);
 
