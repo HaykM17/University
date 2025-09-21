@@ -68,11 +68,11 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
             return null;
         }
 
-        var professorStudentsIds = _professorStudentRepository
-            .GetAll()
+        var professorStudentsIds = await _professorStudentRepository
+            .GetAll(cancellationToken)
             .Where(ps => ps.StudentId == id)
             .Select(ps => ps.ProfessorId)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         if (professorStudentsIds == null || professorStudentsIds.Count == 0)
         {
@@ -89,8 +89,9 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
         }
 
         var professors = _professorRepository
-            .GetAll()
-            .Where(p => professorStudentsIds.Contains(p.Id)).ToList();
+            .GetAll(cancellationToken)
+            .Where(p => professorStudentsIds.Contains(p.Id))
+            .ToList();
 
         var result = new GetStudentByIdWithProfessorsDto
         {
@@ -108,7 +109,7 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
                 Email = p.Email,
                 HireDate = p.HireDate,
                 Status = p.Status,
-                CreatedAt = student.CreatedAt,
+                CreatedAt = p.CreatedAt
             }).ToList()
         };
 
@@ -248,11 +249,11 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
         return new StudentsPageResponseDto { Meta = meta, Items = items };
     }
 
-    public async Task<int> AttachProfessorsAsync(AttachIdsDto dto, CancellationToken ct = default)
+    public async Task<int> AttachProfessorsAsync(AttachIdsDto dto, CancellationToken cancellationToken = default)
     {
         if (dto.Ids == null || dto.Ids.Count == 0) return 0;
 
-        var student = await _studentRepository.GetByIdAsync(dto.Id, ct);
+        var student = await _studentRepository.GetByIdAsync(dto.Id, cancellationToken);
 
         if (student is null)
         {
@@ -266,11 +267,11 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
         }
 
         var existProfIds = await _professorRepository
-            .GetAll(ct)
+            .GetAll(cancellationToken)
             .AsNoTracking()
             .Where(p => dto.Ids.Contains(p.Id))
             .Select(p => p.Id)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
 
         if (existProfIds.Count == 0) 
         {
@@ -278,12 +279,13 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
         }
 
         var already = await _professorStudentRepository
-            .GetAll(ct)
+            .GetAll(cancellationToken)
             .Where(ps => ps.StudentId == dto.Id && existProfIds.Contains(ps.ProfessorId))
             .Select(ps => ps.ProfessorId)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
 
         var toAdd = existProfIds.Except(already).ToList();
+
         if (toAdd.Count == 0)
         {
             return 0;
@@ -291,7 +293,7 @@ public class StudentService(IGenericRepository<Student> _studentRepository,
 
         var rows = toAdd.Select(pid => new ProfessorStudent { StudentId = dto.Id, ProfessorId = pid });
 
-        return await _professorStudentRepository.AddRangeAsync(rows, ct);
+        return await _professorStudentRepository.AddRangeAsync(rows, cancellationToken);
     }
 
     public async Task<int> RemoveProfessorAsync(int studentId, int professorId, CancellationToken cancellationToken = default)
