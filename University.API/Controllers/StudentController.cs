@@ -104,7 +104,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPut("bulk")]
-    public async Task<ActionResult<BulkUpdateDto>> BulkUpdate([FromBody] List<BulkUpdateStudentRequestDto> studentsDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<BulkUpdateDto>> BulkUpdateAsync([FromBody] List<BulkUpdateStudentRequestDto> studentsDto, CancellationToken cancellationToken)
     {
         var result = await _studentService.BulkUpdateAsync(studentsDto, cancellationToken);
 
@@ -145,9 +145,9 @@ public class StudentController : ControllerBase
     }
 
     [HttpDelete("{id:int}/professors/{professorId:int}")]
-    public async Task<IActionResult> RemoveProfessor(int id, int professorId, CancellationToken ct)
+    public async Task<IActionResult> RemoveProfessor([FromRoute]int id, [FromRoute] int professorId, CancellationToken cancellationToken)
     {
-        var result = await _studentService.RemoveProfessorAsync(id, professorId, ct);
+        var result = await _studentService.RemoveProfessorAsync(id, professorId, cancellationToken);
 
         if(result == 0)
         {

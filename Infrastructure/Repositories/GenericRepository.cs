@@ -1,5 +1,5 @@
 ﻿using Application.Abstract.Repasitories;
-using Application.Dtos.Response;
+using Application.Common.Results;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -90,11 +90,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return existing;
     }
 
-    public async Task<BulkUpdateDto> UpdateBulkAsync(List<T> entities, CancellationToken cancellationToken = default)
+    public async Task<BulkUpdateResult> UpdateBulkAsync(List<T> entities, CancellationToken cancellationToken = default)
     {
         if (entities == null || entities.Count == 0)
         {
-            return new BulkUpdateDto 
+            return new BulkUpdateResult 
             {
                 Updated = 0, 
                 NotFoundIds = new List<int>()
@@ -134,10 +134,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
-        return new BulkUpdateDto
+        return new BulkUpdateResult
         {
-            Updated = 0,
-            NotFoundIds = new List<int>()
+            Updated = updated,
+            NotFoundIds = notFound
         };
     }
 
@@ -156,22 +156,24 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return existingEntity;
     }
 
-    public async Task<int> AddRangeAsync(IEnumerable<T> entities, CancellationToken ct = default)
+    public async Task<int> AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
     {
-        var list = entities?.ToList() ?? new();
+        var list = entities?.ToList() ?? [];
+
         if (list.Count == 0)
         {
             return 0;
         }
 
-        await _appDbContext.Set<T>().AddRangeAsync(list, ct);
-        return await _appDbContext.SaveChangesAsync(ct);
+        await _appDbContext.Set<T>().AddRangeAsync(list, cancellationToken);
+        return await _appDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> DeleteFromListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
         var set = _appDbContext.Set<T>();
         var toRemove = await set.Where(predicate).ToListAsync(cancellationToken);
+
         if (toRemove.Count == 0)
         {
             return 0;
