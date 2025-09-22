@@ -1,4 +1,5 @@
-﻿using Application.Mapping;
+﻿using Application.Services.Abstract;
+using Application.Services.Concrete;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,10 @@ public static class DependencyInjection
 
         // DI AutoMapper
         services.AddAutoMapper(cfg => cfg.AddMaps(assembly));
+
+        // DI Services
+        services.AddScoped<IStudentService, StudentService>();
+        services.AddScoped<IProfessorService, ProfessorService>();
 
         return services;
     }

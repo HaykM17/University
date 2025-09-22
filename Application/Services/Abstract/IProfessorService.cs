@@ -4,7 +4,7 @@ using Application.Dtos.Request;
 using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ProfessorDto;
 
-namespace Application.Abstract.Services;
+namespace Application.Services.Abstract;
 
 public interface IProfessorService
 {

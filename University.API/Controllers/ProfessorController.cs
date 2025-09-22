@@ -1,7 +1,7 @@
-﻿using Application.Abstract.Services;
-using Application.Dtos.Request;
+﻿using Application.Dtos.Request;
 using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ProfessorDto;
+using Application.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace University.API.Controllers;
@@ -135,7 +135,7 @@ public class ProfessorController : ControllerBase
     {
         var result = await _professorService.RemoveStudentAsync(id, studentId, cancellationToken);
 
-        if(result == null)
+        if(result == 0)
         {
             return NotFound();
         }

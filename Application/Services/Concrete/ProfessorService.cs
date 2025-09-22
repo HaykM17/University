@@ -1,17 +1,17 @@
-﻿using Application.Abstract.Repasitories;
-using Application.Abstract.Services;
-using Application.Common.Extensions;
+﻿using Application.Common.Extensions;
 using Application.Common.Pagination;
 using Application.Common.Results;
 using Application.Dtos.Request;
 using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ProfessorDto;
 using Application.Dtos.Response.StudentDto;
+using Application.Repositories;
+using Application.Services.Abstract;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Application.Services.Concrete;
 
 public class ProfessorService(IGenericRepository<Professor> _professorRepository,
     IGenericRepository<ProfessorStudent> _professorStudentRepository,
@@ -40,7 +40,7 @@ public class ProfessorService(IGenericRepository<Professor> _professorRepository
             Status = p.Status,
             HireDate = p.HireDate,
             CreatedAt = p.CreatedAt
-        }).ToListAsync();
+        }).ToListAsync(cancellationToken);
         
         return professorsDto;
     }
