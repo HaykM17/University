@@ -1,17 +1,17 @@
-﻿using Application.Abstract.Repasitories;
-using Application.Abstract.Services;
-using Application.Common.Extensions;
+﻿using Application.Common.Extensions;
 using Application.Common.Pagination;
 using Application.Dtos.Request;
 using Application.Dtos.Request.StudentDto;
 using Application.Dtos.Response;
 using Application.Dtos.Response.ProfessorDto;
 using Application.Dtos.Response.StudentDto;
+using Application.Repositories;
+using Application.Services.Abstract;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Application.Services.Concrete;
 
 public class StudentService(IGenericRepository<Student> _studentRepository,
     IGenericRepository<ProfessorStudent> _professorStudentRepository,

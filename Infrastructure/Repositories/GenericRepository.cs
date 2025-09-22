@@ -1,5 +1,5 @@
-﻿using Application.Abstract.Repasitories;
-using Application.Common.Results;
+﻿using Application.Common.Results;
+using Application.Repositories;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -171,15 +171,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task<int> DeleteFromListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var set = _appDbContext.Set<T>();
-        var toRemove = await set.Where(predicate).ToListAsync(cancellationToken);
+        var toRemove = await _appDbContext.Set<T>().Where(predicate).ToListAsync(cancellationToken);
 
         if (toRemove.Count == 0)
         {
             return 0;
         }
 
-        set.RemoveRange(toRemove);
+        _appDbContext.Set<T>().RemoveRange(toRemove);
         return await _appDbContext.SaveChangesAsync(cancellationToken);
     }
 }

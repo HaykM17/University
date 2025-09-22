@@ -4,7 +4,7 @@ using Application.Dtos.Request.StudentDto;
 using Application.Dtos.Response;
 using Application.Dtos.Response.StudentDto;
 
-namespace Application.Abstract.Services;
+namespace Application.Services.Abstract;
 
 public interface IStudentService
 {

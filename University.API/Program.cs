@@ -25,11 +25,7 @@ public class Program
         builder.Services.AddInfrastructure()
             .AddApplication();
 
-        //builder.Host.UseSerilog((context, configuration) =>
-        //    configuration.ReadFrom.Configuration(context.Configuration));
-
         // DB Injections
-
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("UniversityConnectionString")));
 
@@ -41,7 +37,6 @@ public class Program
 
         builder.Services.AddScoped<FluentValidationActionFilter>();
         builder.Services.AddControllers(o => o.Filters.Add<FluentValidationActionFilter>());
-
 
         // AutoMapper
         builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());

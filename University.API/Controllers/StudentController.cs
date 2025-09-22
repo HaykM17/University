@@ -1,8 +1,8 @@
-﻿using Application.Abstract.Services;
-using Application.Dtos.Request;
+﻿using Application.Dtos.Request;
 using Application.Dtos.Request.StudentDto;
 using Application.Dtos.Response;
 using Application.Dtos.Response.StudentDto;
+using Application.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace University.API.Controllers;
@@ -145,7 +145,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpDelete("{id:int}/professors/{professorId:int}")]
-    public async Task<IActionResult> RemoveProfessor([FromRoute]int id, [FromRoute] int professorId, CancellationToken cancellationToken)
+    public async Task<IActionResult> RemoveProfessor([FromRoute]int id, [FromRoute]int professorId, CancellationToken cancellationToken)
     {
         var result = await _studentService.RemoveProfessorAsync(id, professorId, cancellationToken);
 

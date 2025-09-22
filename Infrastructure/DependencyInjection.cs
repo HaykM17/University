@@ -1,8 +1,6 @@
-﻿using Application.Abstract.Repasitories;
-using Application.Abstract.Services;
+﻿using Application.Repositories;
 using Infrastructure.Repositories;
 using Infrastructure.Seeding;
-using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
@@ -20,9 +18,7 @@ public static class DependencyInjection
         // DI generic repository
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-        // DI Services
-        services.AddScoped<IStudentService, StudentService>();
-        services.AddScoped<IProfessorService, ProfessorService>();
+        
         return services;
     }
 }
