@@ -22,12 +22,8 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         // Custom Services
-        builder.Services.AddInfrastructure()
+        builder.Services.AddInfrastructure(builder.Configuration)
             .AddApplication();
-
-        // DB Injections
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("UniversityConnectionString")));
 
         // DI Fluent Validation
         builder.Services.Configure<ApiBehaviorOptions>(o =>
@@ -37,10 +33,6 @@ public class Program
 
         builder.Services.AddScoped<FluentValidationActionFilter>();
         builder.Services.AddControllers(o => o.Filters.Add<FluentValidationActionFilter>());
-
-        // AutoMapper
-        builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
-
 
         var app = builder.Build();
 
@@ -65,7 +57,6 @@ public class Program
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.Migrate();
         }
-
 
         //For File(json) Seeding
         using (var scope = app.Services.CreateScope())
