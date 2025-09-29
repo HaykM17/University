@@ -2,11 +2,12 @@
 using Infrastructure;
 using Infrastructure.Persistence.Data;
 using Application;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Seeding;
-using University.API.Common.Filters;
-using Application.Mapping;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace University.API;
 
@@ -19,20 +20,40 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "University API", Version = "v1" });
+            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = JwtBearerDefaults.AuthenticationScheme
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        },
+                        Scheme = "Oauth2",
+                        Name = JwtBearerDefaults.AuthenticationScheme,
+                        In = ParameterLocation.Header
+                    },
+                    new List<string>()
+                }
+            });
+        });
 
         // Custom Services
         builder.Services.AddInfrastructure(builder.Configuration)
-            .AddApplication();
-
-        // DI Fluent Validation
-        builder.Services.Configure<ApiBehaviorOptions>(o =>
-        {
-            o.SuppressModelStateInvalidFilter = true;
-        });
-
-        builder.Services.AddScoped<FluentValidationActionFilter>();
-        builder.Services.AddControllers(o => o.Filters.Add<FluentValidationActionFilter>());
+            .AddApplication()
+            .AddWebApi();
 
         var app = builder.Build();
 
@@ -43,9 +64,9 @@ public class Program
             app.UseSwaggerUI();
         }
 
-
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
 

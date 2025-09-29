@@ -5,7 +5,7 @@ using Application.Dtos.Request;
 using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ProfessorDto;
 using Application.Dtos.Response.StudentDto;
-using Application.Repositories;
+using Application.Repositories.GenericRepository;
 using Application.Services.Abstract;
 using AutoMapper;
 using Domain.Entities;

@@ -3,6 +3,7 @@ using Application.Dtos.Request.StudentDto;
 using Application.Dtos.Response;
 using Application.Dtos.Response.StudentDto;
 using Application.Services.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace University.API.Controllers;
@@ -20,6 +21,7 @@ public class StudentController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(CreateStudentRequestDto), 201)]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> CreateAsync([FromBody] CreateStudentRequestDto studentDto, CancellationToken cancellationToken)
     {
         if (studentDto == null)
@@ -33,6 +35,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
         var result = await _studentService.GetAllAsync(cancellationToken);
@@ -43,6 +46,7 @@ public class StudentController : ControllerBase
     [HttpGet]
     [Route("filtered")]
     [ProducesResponseType(typeof(StudentsPageResponseDto), 200)]
+    [Authorize(Roles = "Reader")]
     public async Task<ActionResult<StudentsPageResponseDto>> GetPagedAsync([FromQuery] GetStudentsRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _studentService.GetPagedAsync(request, cancellationToken);
@@ -52,6 +56,7 @@ public class StudentController : ControllerBase
 
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(GetStudentByIdResponseDto), 200)]
+    [Authorize(Roles = "Reader")]
     public async ValueTask<IActionResult> GetByIdAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var student = await _studentService.GetByIdAsync(id, cancellationToken);
@@ -65,6 +70,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id:int}/professors")]
+    [Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetByIdWithProfessorsAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var studentAndProfessors = await _studentService.GetByIdWithProfessorsAsync(id, cancellationToken);
@@ -78,6 +84,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> UpdateFullAsync([FromRoute] int id, [FromBody] UpdateStudentRequestDto studentDto, CancellationToken cancellationToken)
     {
         var result = await _studentService.UpdateFullAsync(id, studentDto, cancellationToken);
@@ -91,6 +98,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> UpdatePartialAsync([FromRoute] int id, [FromBody] UpdateStudentFirstNameAndLastNameRequestDto studentDto, CancellationToken cancellationToken)
     {
         var result = await _studentService.UpdatePartialAsync(id,studentDto, cancellationToken);
@@ -104,6 +112,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPut("bulk")]
+    [Authorize(Roles = "Writer")]
     public async Task<ActionResult<BulkUpdateDto>> BulkUpdateAsync([FromBody] List<BulkUpdateStudentRequestDto> studentsDto, CancellationToken cancellationToken)
     {
         var result = await _studentService.BulkUpdateAsync(studentsDto, cancellationToken);
@@ -112,6 +121,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> DeleteAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var result = await _studentService.DeleteAsync(id, cancellationToken);
@@ -126,6 +136,7 @@ public class StudentController : ControllerBase
 
     [HttpPost]
     [Route("{id}/professors")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> AttachProfessorsAsync([FromRoute]int id, [FromBody]List<int> ids, CancellationToken cancellationToken)
     {
         if (ids is null || ids.Count == 0)
@@ -145,6 +156,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpDelete("{id:int}/professors/{professorId:int}")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> RemoveProfessor([FromRoute]int id, [FromRoute]int professorId, CancellationToken cancellationToken)
     {
         var result = await _studentService.RemoveProfessorAsync(id, professorId, cancellationToken);
