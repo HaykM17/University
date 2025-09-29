@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using University.API.Common.Extensions;
 
 namespace University.API;
 
@@ -63,6 +64,9 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        // Exception Handler DI
+        app.UseExceptionHandling();
 
         app.UseHttpsRedirection();
 

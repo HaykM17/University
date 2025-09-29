@@ -1,8 +1,10 @@
-﻿using Application.Dtos.Request;
+﻿using Application.Common.Exceptions;
+using Application.Dtos.Request;
 using Application.Dtos.Request.StudentDto;
 using Application.Dtos.Response;
 using Application.Dtos.Response.StudentDto;
 using Application.Services.Abstract;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +28,7 @@ public class StudentController : ControllerBase
     {
         if (studentDto == null)
         {
-            return BadRequest();
+            throw new RestApiException("Student object is required");
         }
 
         var student = await _studentService.CreateAsync(studentDto, cancellationToken);
@@ -63,7 +65,7 @@ public class StudentController : ControllerBase
 
         if (student == null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return StatusCode(200, student);
@@ -77,7 +79,7 @@ public class StudentController : ControllerBase
 
         if (studentAndProfessors == null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return Ok(studentAndProfessors);
@@ -91,7 +93,7 @@ public class StudentController : ControllerBase
 
         if(result == null)
         {
-            return BadRequest();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return Ok(result);
@@ -117,6 +119,11 @@ public class StudentController : ControllerBase
     {
         var result = await _studentService.BulkUpdateAsync(studentsDto, cancellationToken);
 
+        if (result == null)
+        {
+            return BadRequest();
+        }
+
         return Ok(result);
     }
 
@@ -141,7 +148,7 @@ public class StudentController : ControllerBase
     {
         if (ids is null || ids.Count == 0)
         {
-            return BadRequest("ids is required");
+            throw new RestApiException("ids is required");
         }
 
         var attachDto = new AttachIdsDto

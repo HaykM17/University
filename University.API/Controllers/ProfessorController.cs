@@ -1,7 +1,9 @@
-﻿using Application.Dtos.Request;
+﻿using Application.Common.Exceptions;
+using Application.Dtos.Request;
 using Application.Dtos.Request.ProfessorDto;
 using Application.Dtos.Response.ProfessorDto;
 using Application.Services.Abstract;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +25,11 @@ public class ProfessorController : ControllerBase
     [Authorize(Roles = "Writer")]
     public async ValueTask<IActionResult> CreateAsync([FromBody] CreateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
+        if(professorDto == null)
+        {
+            throw new RestApiException("Professor object is required");
+        }
+
         var created = await _professorService.CreateAsync(professorDto, cancellationToken);
 
         return Ok(created);
@@ -49,14 +56,14 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Reader")]
+    //[Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetByIdAsync([FromRoute]int id, CancellationToken cancellationToken)
     {
         var professor = await _professorService.GetByIdAsync(id, cancellationToken);
 
         if (professor == null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
             
         return Ok(professor);
@@ -79,7 +86,7 @@ public class ProfessorController : ControllerBase
 
         if(professorAndStudents == null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return Ok(professorAndStudents);
@@ -90,6 +97,11 @@ public class ProfessorController : ControllerBase
     public async Task<IActionResult> UpdateFullAsync([FromRoute] int id, [FromBody] UpdateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
         var updated = await _professorService.UpdateFullAsync(id, professorDto, cancellationToken);
+
+        if(updated == null)
+        {
+            throw new NotFoundException(nameof(Professor), id);
+        }
 
         return Ok(updated);
     }
@@ -102,7 +114,7 @@ public class ProfessorController : ControllerBase
 
         if (updated == null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return Ok(updated);
@@ -116,7 +128,7 @@ public class ProfessorController : ControllerBase
 
         if (deleted == null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return Ok(deleted);
@@ -124,12 +136,12 @@ public class ProfessorController : ControllerBase
 
     [HttpPost]
     [Route("{id}/students")]
-    [Authorize(Roles = "Writer")]
+    //[Authorize(Roles = "Writer")]
     public async Task<IActionResult> AttachStudentsAsync([FromRoute] int id, [FromBody] List<int> ids, CancellationToken cancellationToken)
     {
         if (ids is null || ids.Count == 0)
         {
-            return BadRequest("ids is required");
+            throw new RestApiException("ids is required");
         }
 
         var attachDto = new AttachIdsDto
@@ -151,7 +163,7 @@ public class ProfessorController : ControllerBase
 
         if(result == 0)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(Professor), id);
         }
 
         return Ok(result);
