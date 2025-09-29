@@ -1,7 +1,7 @@
 ﻿using Application.Common.Results;
 using System.Linq.Expressions;
 
-namespace Application.Repositories;
+namespace Application.Repositories.GenericRepository;
 
 public interface IGenericRepository<T> where T : class
 {

@@ -20,10 +20,11 @@ public static class DependencyInjection
 
         services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
 
-
         // DI Services
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<IProfessorService, ProfessorService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }

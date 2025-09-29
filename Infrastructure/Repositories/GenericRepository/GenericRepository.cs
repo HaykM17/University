@@ -1,10 +1,10 @@
 ﻿using Application.Common.Results;
-using Application.Repositories;
+using Application.Repositories.GenericRepository;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Repositories.GenericRepository;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
