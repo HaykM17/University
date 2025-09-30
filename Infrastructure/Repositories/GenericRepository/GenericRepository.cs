@@ -90,15 +90,15 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return existing;
     }
 
-    public async Task<BulkUpdateResult> UpdateBulkAsync(List<T> entities, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<int, List<int>>> UpdateBulkAsync(List<T> entities, CancellationToken cancellationToken = default)
     {
+        var dic = new Dictionary<int, List<int>>();
+
         if (entities == null || entities.Count == 0)
         {
-            return new BulkUpdateResult 
-            {
-                Updated = 0, 
-                NotFoundIds = new List<int>()
-            };
+            dic.Add(0, new List<int>());
+
+            return dic;
         }
 
         var ids = entities
@@ -134,11 +134,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
-        return new BulkUpdateResult
-        {
-            Updated = updated,
-            NotFoundIds = notFound
-        };
+        dic[updated] = notFound;
+
+        return dic;
     }
 
     public async Task<T?> DeleteAsync(int id, CancellationToken cancellationToken = default)

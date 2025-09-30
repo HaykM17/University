@@ -160,10 +160,15 @@ public class ProfessorService(IGenericRepository<Professor> _professorRepository
             entities.Add(professor);
         }
 
-        var bulkDto = await _professorRepository.UpdateBulkAsync(entities, cancellationToken);
+        var dic = await _professorRepository.UpdateBulkAsync(entities, cancellationToken);
 
-        result.Updated = bulkDto.Updated;
-        result.NotFoundIds = bulkDto.NotFoundIds;
+        if(dic.Count > 0)
+        {
+            var keyValue = dic.First();
+            result.Updated = keyValue.Key;
+            result.NotFoundIds = keyValue.Value;
+        }
+
         return result;
     }
 
