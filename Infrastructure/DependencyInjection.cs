@@ -22,7 +22,6 @@ public static class DependencyInjection
 
         // DI for Data Seeding
         services.AddScoped<FileSeeder>();
-        // services.AddScoped<BogusSeeder>();
 
         // DI generic repository
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
