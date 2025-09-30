@@ -5,8 +5,6 @@ using Application;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
 using University.API.Common.Extensions;
 

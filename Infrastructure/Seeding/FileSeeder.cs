@@ -29,28 +29,23 @@ public class FileSeeder
         if (await _appDbContext.SeedHistories.AsNoTracking().AnyAsync(x => x.Key == runOnceKey, ct))
             return;
 
-        // 1) Считываем все JSON заранее (без сохранений)
         var profs = await ReadJsonAsync<Professor>(profPath, ct);
         var studs = await ReadJsonAsync<Student>(studPath, ct);
         var links = await ReadJsonAsync<ProfessorStudent>(profStudPath, ct);
 
-        // 2) Одна транзакция на всё
         await using var transaction = await _appDbContext.Database.BeginTransactionAsync(ct);
 
         try {
 
-            // 2.1) Вставляем родителей (если есть)
             if (profs.Count > 0)
                 await _appDbContext.Professors.AddRangeAsync(profs, ct);
 
             if (studs.Count > 0)
                 await _appDbContext.Students.AddRangeAsync(studs, ct);
 
-            // ВАЖНО: сохраняем, чтобы у вставленных родителей появились Id (IDENTITY)
             if (profs.Count > 0 || studs.Count > 0)
                 await _appDbContext.SaveChangesAsync(ct);
 
-            // 2.2) Пересчёт валидных Id родителей и фильтрация связей
             if (links.Count > 0)
             {
                 var profList = await _appDbContext.Professors
@@ -66,7 +61,6 @@ public class FileSeeder
                 var profIds = profList.ToHashSet();
                 var studIds = studList.ToHashSet();
 
-                // Убираем пары без существующих родителей и дубликаты (ProfessorId, StudentId)
                 var unique = new HashSet<(int p, int s)>();
                 var cleaned = new List<ProfessorStudent>();
 
@@ -84,7 +78,6 @@ public class FileSeeder
                     await _appDbContext.ProfessorStudents.AddRangeAsync(cleaned, ct);
             }
 
-            // 2.3) Сохраняем связи и SeedHistory
             _appDbContext.SeedHistories.Add(new SeedHistory { Key = runOnceKey });
             await _appDbContext.SaveChangesAsync(ct);
 
@@ -98,7 +91,6 @@ public class FileSeeder
         }
     }
 
-    // Удобный приватный помощник для чтения JSON
     private static async Task<List<T>> ReadJsonAsync<T>(string? path, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
