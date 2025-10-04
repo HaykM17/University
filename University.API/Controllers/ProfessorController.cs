@@ -22,7 +22,7 @@ public class ProfessorController : ControllerBase
     }
     
     [HttpPost]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async ValueTask<IActionResult> CreateAsync([FromBody] CreateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
         if(professorDto == null)
@@ -37,7 +37,7 @@ public class ProfessorController : ControllerBase
 
     
     [HttpGet]
-    //[Authorize(Roles = "Reader")]
+    [Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
         var result = await _professorService.GetAllAsync(cancellationToken);
@@ -48,7 +48,7 @@ public class ProfessorController : ControllerBase
     [HttpGet]
     [Route("filtered")]
     [ProducesResponseType(typeof(ProfessorsPageResponseDto), 200)]
-    //[Authorize(Roles = "Reader")]
+    [Authorize(Roles = "Reader")]
     public async Task<ActionResult<ProfessorsPageResponseDto>> GetPagedAsync([FromQuery] GetProfessorsRequestDto request, CancellationToken cancellationToken)
     {
         var result = await _professorService.GetPagedAsync(request, cancellationToken);
@@ -56,7 +56,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    //[Authorize(Roles = "Reader")]
+    [Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetByIdAsync([FromRoute]int id, CancellationToken cancellationToken)
     {
         var professor = await _professorService.GetByIdAsync(id, cancellationToken);
@@ -70,7 +70,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpPut("bulk")]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> BulkUpdateAsync([FromBody] List<BulkUpdateProfessorRequestDto> professorsDto, CancellationToken cancellationToken)
     {
         var result = await _professorService.BulkUpdateAsync(professorsDto, cancellationToken);
@@ -79,7 +79,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpGet("{id:int}/students")]
-    //[Authorize(Roles = "Reader")]
+    [Authorize(Roles = "Reader")]
     public async Task<IActionResult> GetByIdWithStudentsAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var professorAndStudents = await _professorService.GetByIdWithStudentsAsync(id, cancellationToken);
@@ -93,7 +93,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> UpdateFullAsync([FromRoute] int id, [FromBody] UpdateProfessorRequestDto professorDto, CancellationToken cancellationToken)
     {
         var updated = await _professorService.UpdateFullAsync(id, professorDto, cancellationToken);
@@ -107,7 +107,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpPatch("/patch/{id:int}")]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> UpdatePartialAsync([FromRoute]int id, [FromBody]UpdateProfessorFirstNameAndLastNameRequestDto professorDto, CancellationToken cancellationToken)
     {
         var updated = await _professorService.UpdatePartialAsync(id, professorDto, cancellationToken);
@@ -121,7 +121,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> DeleteAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var deleted = await _professorService.DeleteAsync(id, cancellationToken);
@@ -136,7 +136,7 @@ public class ProfessorController : ControllerBase
 
     [HttpPost]
     [Route("{id}/students")]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> AttachStudentsAsync([FromRoute] int id, [FromBody] List<int> ids, CancellationToken cancellationToken)
     {
         if (ids is null || ids.Count == 0)
@@ -156,7 +156,7 @@ public class ProfessorController : ControllerBase
     }
 
     [HttpDelete("{id:int}/students/{studentId:int}")]
-    //[Authorize(Roles = "Writer")]
+    [Authorize(Roles = "Writer")]
     public async Task<IActionResult> RemoveStudentAsync([FromRoute]int id, [FromRoute]int studentId, CancellationToken cancellationToken)
     {
         var result = await _professorService.RemoveStudentAsync(id, studentId, cancellationToken);
