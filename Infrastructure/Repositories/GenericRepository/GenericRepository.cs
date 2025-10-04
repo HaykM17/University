@@ -1,5 +1,4 @@
-﻿using Application.Common.Results;
-using Application.Repositories.GenericRepository;
+﻿using Application.Repositories.GenericRepository;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
